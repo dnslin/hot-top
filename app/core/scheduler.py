@@ -1,6 +1,5 @@
 import asyncio
 from app.spiders.manager import SpiderManager
-from app.db.session import AsyncSessionLocal
 from datetime import datetime
 import schedule
 import time
@@ -20,13 +19,11 @@ class Scheduler:
         """爬虫任务"""
         try:
             logger.info(f"Starting crawl task at {datetime.now()}")
+            # 直接运行爬虫，数据保存已经在 run_all_spiders 中处理
             topics = await self.spider_manager.run_all_spiders()
-
-            if topics:
-                async with AsyncSessionLocal() as db:
-                    await self.spider_manager.save_topics(topics, db)
-
-            logger.info(f"Crawl task completed at {datetime.now()}")
+            logger.info(
+                f"Crawl task completed at {datetime.now()}, got {len(topics)} topics"
+            )
         except Exception as e:
             logger.error(f"Error in crawl task: {str(e)}")
 

@@ -15,5 +15,6 @@ class Topic(Base):
     rank = Column(Integer)  # 排名
     hot_value = Column(String(100))  # 热度值
     description = Column(Text, nullable=True)  # 描述
+    image_url = Column(String(1000), nullable=True)  # 新增图片URL字段
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

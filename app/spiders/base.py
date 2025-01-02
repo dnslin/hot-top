@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from typing import List, Dict, Any
 import aiohttp
 from app.core.logger import setup_logger
+from app.db.crud import save_topics
+from app.db.session import async_session
 
 logger = setup_logger("spider")
 
@@ -41,3 +43,16 @@ class BaseSpider(ABC):
         if not text:
             return ""
         return text.strip()
+
+    async def crawl(self):
+        try:
+            html = await self.fetch()
+            if html:
+                topics = await self.parse(html)
+                if topics:
+                    async with async_session() as session:
+                        await save_topics(session, topics)
+                    return topics
+        except Exception as e:
+            logger.error(f"Error in crawl task: {str(e)}")
+            raise e
